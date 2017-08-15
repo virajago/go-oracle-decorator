@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir> <env-dir>
+
+# go-oracle-decorator
+#
+# Copyright (c) 2017-Present Pivotal Software, Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+BIN_DIR=$(cd $(dirname $0); pwd)
+ROOT_DIR=$(dirname $BIN_DIR)
+BUILD_DIR=$1
+CACHE_DIR=$2
+ENV_DIR=$3
+build=$(cd "$1/" && pwd)
+
+mkdir -p $BUILD_DIR/go_oracle
+mkdir -p $BUILD_DIR/.profile.d
+mkdir -p $BUILD_DIR/go_oracle/oracle_client
+
+# Do this for setting up Oracle client
+
+#Copy and unzip files
+cp $ROOT_DIR/lib/oracle_client/* $BUILD_DIR/go_oracle/oracle_client
+cd $BUILD_DIR/go_oracle/oracle_client
+tar -xvzf "oracle_includes.tar.gz"
+tar -xvzf "oracle_libs.tar.gz"
+
+#Setup env vars for compilation
+export LD_LIBRARY_PATH="${build}/go_oracle/oracle-client/oracle/12.1/client64/lib/:${LD_LIBRARY_PATH}"
+echo $LD_LIBRARY_PATH
+export PKG_CONFIG_PATH="${build}/go_oracle/oracle-client:${PKG_CONFIG_PATH}"
+echo $PKG_CONFIG_PATH
+
+echo "prefix=${build}/go_oracle/oracle-client/oracle/12.1/client64" > ${build}/go_oracle/oracle-client/oci8.pc
+echo "includedir=${build}/go_oracle/oracle-client/oracle/12.1/client64" >> ${build}/go_oracle/oracle-client/oci8.pc
+echo "libdir=${build}/go_oracle/oracle-client/oracle/12.1/client64/lib" >> ${build}/go_oracle/oracle-client/oci8.pc
+echo "" >> ${build}/go_oracle/oracle-client/oci8.pc
+echo "Name: oci8" >> ${build}/go_oracle/oracle-client/oci8.pc
+echo "Description: Oracle Instant Client" >> ${build}/go_oracle/oracle-client/oci8.pc
+echo "Version: 12.1" >> ${build}/go_oracle/oracle-client/oci8.pc
+echo 'Cflags: -I${includedir}' >> ${build}/go_oracle/oracle-client/oci8.pc
+echo 'Libs: -L${libdir} -lclntsh' >> ${build}/go_oracle/oracle-client/oci8.pc
+
+#Setup oracle library path when the container starts
+mkdir -p $build/.profile.d
+echo 'export LD_LIBRARY_PATH=/home/vcap/app/go_oracle/oracle-client/oracle/12.1/client64/lib/' > $build/.profile.d/setuporacle.sh
+
+#cp $ROOT_DIR/lib/go_oracle.py $BUILD_DIR/go_oracle
+#cp $ROOT_DIR/lib/go_oracle.sh $BUILD_DIR/.profile.d

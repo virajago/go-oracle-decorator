@@ -21,6 +21,44 @@ BIN_DIR=$(cd $(dirname $0); pwd)
 ROOT_DIR=$(dirname $BIN_DIR)
 BUILD_DIR=$1
 
+build=$(cd "$1/" && pwd)
+
+mkdir -p $BUILD_DIR/go_oracle
+mkdir -p $BUILD_DIR/.profile.d
+mkdir -p $BUILD_DIR/go_oracle/oracle_client
+
+# Do this for setting up Oracle client
+
+#Copy and unzip files
+cp $ROOT_DIR/lib/oracle_client/* $BUILD_DIR/go_oracle/oracle_client
+cd $BUILD_DIR/go_oracle/oracle_client
+tar -xvzf "oracle_includes.tar.gz"
+tar -xvzf "oracle_libs.tar.gz"
+
+#Setup env vars for compilation
+export LD_LIBRARY_PATH="${build}/go_oracle/oracle_client/oracle/12.1/client64/lib/:${LD_LIBRARY_PATH}"
+echo $LD_LIBRARY_PATH
+export PKG_CONFIG_PATH="${build}/go_oracle/oracle_client:${PKG_CONFIG_PATH}"
+echo $PKG_CONFIG_PATH
+
+echo "prefix=${build}/go_oracle/oracle_client/oracle/12.1/client64" > ${build}/go_oracle/oracle_client/oci8.pc
+echo "includedir=${build}/go_oracle/oracle_client/oracle/12.1/client64" >> ${build}/go_oracle/oracle_client/oci8.pc
+echo "libdir=${build}/go_oracle/oracle_client/oracle/12.1/client64/lib" >> ${build}/go_oracle/oracle_client/oci8.pc
+echo "" >> ${build}/go_oracle/oracle_client/oci8.pc
+echo "Name: oci8" >> ${build}/go_oracle/oracle_client/oci8.pc
+echo "Description: Oracle Instant Client" >> ${build}/go_oracle/oracle_client/oci8.pc
+echo "Version: 12.1" >> ${build}/go_oracle/oracle_client/oci8.pc
+echo 'Cflags: -I${includedir}' >> ${build}/go_oracle/oracle_client/oci8.pc
+echo 'Libs: -L${libdir} -lclntsh' >> ${build}/go_oracle/oracle_client/oci8.pc
+
+#Setup oracle library path when the container starts
+mkdir -p $build/.profile.d
+echo 'export LD_LIBRARY_PATH=/home/vcap/app/go_oracle/oracle_client/oracle/12.1/client64/lib/' > $build/.profile.d/setuporacle.sh
+
+#cp $ROOT_DIR/lib/go_oracle.py $BUILD_DIR/go_oracle
+#cp $ROOT_DIR/lib/go_oracle.sh $BUILD_DIR/.profile.d
+
+
 export PYTHONPATH="${PYTHONPATH}:$ROOT_DIR/lib"
 
 python -c 'from go_oracle import detect; detect()'

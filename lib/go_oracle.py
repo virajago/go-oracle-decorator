@@ -37,7 +37,7 @@ def main():
 		ctx.verify_mode = ssl.CERT_NONE
 	appinfo = get_application_info()
 
-def detect():
+def decorate():
 	appinfo = get_application_info()
 	#service = find_eureka_service(appinfo)
 	#if service == None:

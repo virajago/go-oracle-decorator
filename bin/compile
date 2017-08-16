@@ -39,6 +39,7 @@ tar -xvzf "oracle_libs.tar.gz"
 #Setup env vars for compilation
 export LD_LIBRARY_PATH="${build}/go_oracle/oracle_client/oracle/12.1/client64/lib/:${LD_LIBRARY_PATH}"
 echo $LD_LIBRARY_PATH
+echo $PKG_CONFIG_PATH
 export PKG_CONFIG_PATH="${build}/go_oracle/oracle_client:${PKG_CONFIG_PATH}"
 echo $PKG_CONFIG_PATH
 

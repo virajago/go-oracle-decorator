@@ -54,8 +54,8 @@ echo 'Cflags: -I${includedir}' >> ${build}/go_oracle/oracle_client/oci8.pc
 echo 'Libs: -L${libdir} -lclntsh' >> ${build}/go_oracle/oracle_client/oci8.pc
 
 cp ${build}/go_oracle/oracle_client/oci8.pc ${build}/oci8.pc
-cp ${build}/go_oracle/oracle_client/oci8.pc /usr/lib/pkgconfig/oci8.pc
-cp ${build}/go_oracle/oracle_client/oci8.pc /usr/share/pkgconfig/oci8.pc
+sudo cp ${build}/go_oracle/oracle_client/oci8.pc /usr/lib/pkgconfig/oci8.pc
+sudo cp ${build}/go_oracle/oracle_client/oci8.pc /usr/share/pkgconfig/oci8.pc
 cp ${build}/go_oracle/oracle_client/oci8.pc /usr/local/lib/pkgconfig/oci8.pc
 cp ${build}/go_oracle/oracle_client/oci8.pc /usr/local/share/pkgconfig/oci8.pc
 #Setup oracle library path when the container starts

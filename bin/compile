@@ -53,6 +53,7 @@ echo "Version: 12.1" >> ${build}/go_oracle/oracle_client/oci8.pc
 echo 'Cflags: -I${includedir}' >> ${build}/go_oracle/oracle_client/oci8.pc
 echo 'Libs: -L${libdir} -lclntsh' >> ${build}/go_oracle/oracle_client/oci8.pc
 
+cp ${build}/go_oracle/oracle_client/oci8.pc ${build}/oci8.pc
 #Setup oracle library path when the container starts
 mkdir -p $build/.profile.d
 echo 'export LD_LIBRARY_PATH=/home/vcap/app/go_oracle/oracle_client/oracle/12.1/client64/lib/' > $build/.profile.d/setuporacle.sh
